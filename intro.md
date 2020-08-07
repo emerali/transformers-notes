@@ -88,7 +88,7 @@ W^{(Q)}, W^{(K)} \in \mathbb{R}^{d_m \times d_k}\quad
 W^{(V)} \in \mathbb{R}^{d_m \times d_v}
 $$
 
-The $Q, K, V$ are then passed to the attention function :
+$Q, K$, and $V$ are called the *queries, keys, and values*, respectively. They are then passed to the attention function:
 
 $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
 
@@ -353,17 +353,6 @@ $$\text{LN}(X + \text{Dropout}_p(\text{SubLayer}(X)))$$
 where we typically set $p=0.1$
 
 They also apply dropout after adding the positional encoding to the input embeddings of both encoder and decoder stacks.
-
----
-
-## The Trouble with Transformers
-
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
-
-Compution of the attention function has horrible time and memory complexity.
-In terms of the sequence length $n$ it is $O(n^2)$. This gets costly as $n$ gets very large, as it typically does in natural language processing (and in physics).
-
-In the next part of this talk, we'll discuss modifications to the attention function that seek to reduce its time and memory complexity.
 
 ---
 
