@@ -20,8 +20,8 @@ August 7th, 2020
 
 $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
 
-Computtaion of the attention function has horrible time and memory complexity.
-In terms of the sequence length $n$ it is $O(n^2)$. This gets costly as $n$ gets very large, as it typically does in natural language processing (and in physics).
+Computation of the attention function has horrible time and memory complexity.
+In terms of the sequence length $n$ it is $O(n^2)$. This gets costly as $n$ gets very large, as it typically does in natural language processing (and sometimes in physics).
 
 In this talk, we'll discuss modifications to the attention function that seek to reduce its time and memory complexity.
 
@@ -76,7 +76,7 @@ $$
 
 which means that, for any $\epsilon$ we can construct a matrix $\tilde{P}$ (which has rank on the order of $\log(n)$) that has a high probability of approximating the action of $P$ on a vector $v$.
 
-This low-rank approximation to $P$ takes the form:
+This low-rank approximation to $P$ constructed in the proof takes the form:
 
 $$
 \tilde{P} = P R^T R
@@ -93,7 +93,7 @@ $$\text{Attention}(Q, EK, FV) = \text{softmax}\left(\frac{Q(EK)^T}{\sqrt{d_k}}\r
 
 Now our context mapping matrix $P$ has shape $n \times k$ (with $k\ll n$), and the values matrix is effectively of size $k \times d_v$. We see that the operations above take time/space $O(nk) < O(n^2)$.
 
-In a Multi-head Attention setting, we'd typically have seperately trained $E, F$ matrices for each attention head.
+In a Multi-head Attention setting, we'd typically have separately trained $E, F$ matrices for each attention head.
 
 ---
 
@@ -233,7 +233,7 @@ where $f_l$ is the Feed-Forward Net at the end of the Transformer layer $l$, and
 
 ## Multi-head Linear Attention as an RNN (not in the paper)
 
-We easily see that a Multi-head Attention analogue of the linear transformer would function as an RNN with $2h$ hidden states:
+We easily see that a Multi-head Attention analogue of the linear Transformer would function as an RNN with $2h$ hidden states:
 
 $$
 \begin{cases}
@@ -287,11 +287,7 @@ _footer: (Katharopoulos et al. 2020)
 
 Notice that in general, the feature map $\phi(x)$ can output a vector of a different size than its input.
 
-We can imagine defining
-$$\phi'(x) = E\phi(x)$$
-where $E \in \mathbb{R}^{k\times n}$ as in the Linformer paper. Alternatively, could apply $E$ to $x$ before applying $\phi$.
-
-Our (unmasked) attention function then becomes:
+Applying $E$ to the output of applying $\phi$ on our keys, and $F$ to our values as before. Our (unmasked) attention function then becomes:
 
 $$\lbrack A(Q, K, V)\rbrack_i = \frac{\phi(Q_i)^T \sum_j^n (E\phi(K_j)) (FV_j)^T }{\phi(Q_i)^T \sum_j^n \phi(K_j)}
 $$
@@ -301,14 +297,16 @@ $$
 Or, looking at just the numerator in matrix notation:
 
 $$
-A(Q, K, V) \propto \phi(Q)\lbrack(E\phi(K))^T (FV)\rbrack
+A(Q, K, V) \propto (\phi(Q))\lbrack(E\phi(K))^T (FV)\rbrack
 $$
 
 where $E\phi(K)$ is a matrix of size $k\times d_k$, $FV$ is of size $k \times d_v$, $\phi(Q)$ is $n \times d_k$.
 
-Again, once we've cached the value in the square brackets, the time and space complexity of computing attention, given a query matrix $Q$ is still $O(nd_kd_v)$.
+The problem with this is that we can no longer guarantee that our similarity function is positive definite: $\text{sim}(q, k) = \phi(q)^T E \phi(k)$.
 
-So combining the two methods doesn't give any actual benefits in time or space complexity.
+Again, once we've cached the value in the square brackets, the time and space complexity of computing attention, given a query matrix $Q$ is $O(nd_kd_v)$.
+
+So combining the two methods doesn't give any actual benefits in time or space complexity. In fact, it introduces new problems.
 
 ---
 
