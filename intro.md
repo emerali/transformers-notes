@@ -364,3 +364,23 @@ Compution of the attention function has horrible time and memory complexity.
 In terms of the sequence length $n$ it is $O(n^2)$. This gets costly as $n$ gets very large, as it typically does in natural language processing (and in physics).
 
 In the next part of this talk, we'll discuss modifications to the attention function that seek to reduce its time and memory complexity.
+
+---
+
+## References (1/2)
+
+Carrasquilla, Juan, et al. "Probabilistic Simulation of Quantum Circuits with the Transformer." Bulletin of the American Physical Society 65 (2020).
+
+Press, Ofir, and Lior Wolf. "Using the Output Embedding to Improve Language Models." Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers. 2017.
+
+Vaswani, Ashish, et al. "Attention is all you need." Advances in neural information processing systems. 2017.
+
+---
+
+## References (2/2)
+
+Ke, Guolin, Di He, and Tie-Yan Liu. "Rethinking the Positional Encoding in Language Pre-training." arXiv preprint arXiv:2006.15595 (2020).
+
+Wang, Benyou, et al. "Encoding word order in complex embeddings." International Conference on Learning Representations. 2019.
+
+Yang, Muqiao, et al. "Complex Transformer: A Framework for Modeling Complex-Valued Sequence." ICASSP 2020-2020 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP). IEEE, 2020.
