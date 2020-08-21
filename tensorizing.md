@@ -98,7 +98,7 @@ $$
 
 ## Tensorizing Neural Networks: Results
 
-Note: In this paper they implemented a matrix rank restricted layer. This was implemented by composing two rectangular matrices, such that the contracted/middle dimension was small.
+Note: In this paper they compared against a matrix rank restricted layer as a baseline. This was implemented by composing two rectangular matrices such that the contracted/middle dimension was small.
 
 ---
 <!--
@@ -134,7 +134,7 @@ _footer: (Novikov et al. 2015)
 
 - Very large as a result
 
-- Apply Tensor Train parametrization to Embedding Layers
+- Idea: Apply Tensor Train parametrization to Embedding Layers
 
 - Note: since the input vector is 1-hotted, we can perform the TT-matrix-vector multiplication much more efficiently
 
@@ -182,7 +182,7 @@ _footer: (Khrulkov et al. 2019)
 
 - GitHub project not a paper
 - Apply Tensor Train parametrization to every FFN in a Transformer
-- Results look promising, but runtime suffers (probably due to non-optimal implementation)
+- Results look promising, but runtime suffers (probably due to a sub-optimal implementation)
 - Methodology isn't very well explained
 
 ---
@@ -280,7 +280,7 @@ Then
 
 $$\chi_{ijk} = S_{jki} V_{ik} \in \mathbb{R}^{N\times d_k \times d_k} \quad \sim\quad O(N d_k^2)$$
 
-Aside: I think their implementation of $S_{ijk}$ is sub-optimal. You can express the summation for $S$ as a cumulative summation over $n$, in which case we only have linear time-scaling in $N$.
+Aside: I think their implementation of $S_{ijk}$ is sub-optimal. You can code the summation for $S$ as a cumulative summation over $n$, in which case we only have linear time-scaling in $N$: $S_{ijk} = \sum_{n=1}^k Q_{ni} K_{nj} = S_{ij,k-1} + Q_{ki} K_{kj}$
 
 ---
 
@@ -327,13 +327,23 @@ _footer: (Zhang et al. 2020)
 
 ---
 
-## TensorCoder: Comments
+## TensorCoder: Comments (1/2)
 
-- Not clear if dimension-wise attention loses expressivity
+- IMO, dimension-wise attention likely loses expressivity
   - Decreased performance on the Wiki-103 dataset vs PTB might be an indicator of this
-- Since we're assuming $d_k = d_v$, why not just compute the output of attention as: $VS \in \mathbb{R}^{N\times d_k}$?
+  - TensorCoder implicitly assumes that input and output sequences are the same length in order to compute $S_{ijk} = \sum_{n=1}^N Q_{ni} K_{nj} M_{nk}$ (probably not a big deal)
+- Since we're assuming $d_k = d_v$, why not just compute the output of attention as: $\chi = VS \in \mathbb{R}^{N\times d_k}$?
+  - At that point we're basically swapping the roles of $Q$ and $V$...
+
+---
+
+## TensorCoder: Comments (2/2)
+
 - Linearization proposed by the "Transformers are RNNs" paper is still better in terms of memory usage (don't need to store a $N \times d_k \times d_k$ array)
   - Because we sum over the "time" index, we're forced to store this large array in order to enforce causal masking
+- Main contribution of this paper (IMO): how to introduce more parameters into the attention calculation through $W$:
+
+$$O_{ij} = \sum_{m=1}^{d_k} W_{jm} \chi_{ijm} \qquad \chi_{ijk} = S_{jki} V_{ik} \quad \text{or} \quad \chi_{ijk} = S_{jk} V_{ik}$$
 
 ---
 
